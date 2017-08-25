@@ -70,6 +70,70 @@ contour.ResponseSurface <- function(x, ...) {
 
 }
 
+#' Method for contour plots with isoboles based on null model predictions
+#'
+#' @param x Output of \code{\link{fitSurface}}
+#' @param grid.len Number of concentrations to plot for each compound in the
+#'   contour plot. An evenly spaced grid of doses will be generated for each
+#'   compound given its respective observed minimum and maximum doses. Note that
+#'   \code{grid.len^2} computations will be needed later so this number should
+#'   stay reasonably low.
+#' @param logScale If \code{logScale = TRUE}, then grid is evenly spaced in
+#'   the logarithmic scale.
+#' @param ... Further parameters passed to ...
+#' @import ggplot2
+#' @importFrom reshape2 melt
+image.ResponseSurface <- function(x, grid.len = 100, logScale = TRUE, ...) {
+
+  ## Generate evenly spaced grid either on a linear or a log-scale
+  genSeq <- function(doses) {
+
+    if (logScale) {
+      ## Log-scale removed zero dose
+      doses <- setdiff(doses, 0)
+      seq.range <- log(range(doses))
+      c(0, exp(seq(seq.range[1], seq.range[2], length.out = grid.len - 1)))
+    } else {
+      ## Linear scale
+      seq.range <- range(doses)
+      seq(seq.range[1], seq.range[2], length.out = grid.len)
+    }
+
+  }
+
+  coefs <- coef(x$fitResult)
+  doses1 <- genSeq(unique(x$data$d1))
+  doses2 <- genSeq(unique(x$data$d2))
+  resp1 <- L4(doses1, coefs["h1"], coefs["b"], coefs["m1"], coefs["e1"])
+  resp2 <- L4(doses2, coefs["h2"], coefs["b"], coefs["m2"], coefs["e2"])
+
+  data <- rbind(data.frame("d1" = doses1, "d2" = 0, "effect" = resp1),
+                data.frame("d1" = 0, "d2" = doses2, "effect" = resp2))
+
+  predSurface <- predictOffAxis(data, x$fitResult,
+                                null_model = x$null_model)$predSurface
+
+  melt.oa <- data.frame("Var1" = rep(1:100, length(doses2)), # rep(doses1, length(doses2)),
+                        "Var2" = rep(1:100, each = length(doses1)), # rep(doses2, each = length(doses1)),
+                        "effect" = as.numeric(predSurface))
+
+  ggplot(melt.oa,
+         aes_string(x = "Var1", y = "Var2",
+                    z = "effect", fill = "effect")) +
+    theme_bw() +
+    geom_tile() +
+    labs(x = "Compound 1", y = "Compound 2") +
+    scale_fill_gradientn("Effect",
+                         colours = c("steelblue", "lightsteelblue", "lightblue",
+                                     "floralwhite", "beige", "khaki",
+                                     "orange1", "tomato3", "red")) +
+    geom_contour(bins = 7, col = "black", size = 0.2)
+
+
+
+}
+
+
 #' Summary of \code{ResponseSurface} object
 #'
 #' @param object Output of \code{\link{fitSurface}}
