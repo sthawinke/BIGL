@@ -78,11 +78,11 @@ contour.ResponseSurface <- function(x, ...) {
 #'   compound given its respective observed minimum and maximum doses. Note that
 #'   \code{grid.len^2} computations will be needed later so this number should
 #'   stay reasonably low.
-#' @param logScale If \code{logScale = TRUE}, then grid is evenly spaced in
-#'   the logarithmic scale.
+#' @param logScale If \code{logScale = TRUE}, then grid of doses is evenly
+#'   spaced in the logarithmic scale.
 #' @param ... Further parameters passed to ...
 #' @import ggplot2
-#' @importFrom reshape2 melt
+#' @export
 image.ResponseSurface <- function(x, grid.len = 100, logScale = TRUE, ...) {
 
   ## Generate evenly spaced grid either on a linear or a log-scale
@@ -102,34 +102,53 @@ image.ResponseSurface <- function(x, grid.len = 100, logScale = TRUE, ...) {
   }
 
   coefs <- coef(x$fitResult)
-  doses1 <- genSeq(unique(x$data$d1))
-  doses2 <- genSeq(unique(x$data$d2))
-  resp1 <- L4(doses1, coefs["h1"], coefs["b"], coefs["m1"], coefs["e1"])
-  resp2 <- L4(doses2, coefs["h2"], coefs["b"], coefs["m2"], coefs["e2"])
 
+  ## Generate a grid of doses for Compound 1 and predict the response
+  doses1 <- genSeq(unique(x$data$d1))
+  resp1 <- L4(doses1, coefs["h1"], coefs["b"], coefs["m1"], coefs["e1"])
+  ## Generate a grid of doses for Compound 2 and predict the response
+  doses2 <- genSeq(unique(x$data$d2))
+  resp2 <- L4(doses2, coefs["h2"], coefs["b"], coefs["m2"], coefs["e2"])
+  ## Combine both compounds and their marginal predictions
   data <- rbind(data.frame("d1" = doses1, "d2" = 0, "effect" = resp1),
                 data.frame("d1" = 0, "d2" = doses2, "effect" = resp2))
 
+  ## Based on marginal data, generate null model predictions
   predSurface <- predictOffAxis(data, x$fitResult,
                                 null_model = x$null_model)$predSurface
 
-  melt.oa <- data.frame("Var1" = rep(1:100, length(doses2)), # rep(doses1, length(doses2)),
-                        "Var2" = rep(1:100, each = length(doses1)), # rep(doses2, each = length(doses1)),
-                        "effect" = as.numeric(predSurface))
+  melt.surface <- data.frame("d1" = rep(doses1, length(doses2)),
+                             "d2" = rep(doses2, each = length(doses1)),
+                             "effect" = as.numeric(predSurface))
 
-  ggplot(melt.oa,
-         aes_string(x = "Var1", y = "Var2",
-                    z = "effect", fill = "effect")) +
+  labnames <- c("Response", "Compound 1", "Compound 2")
+  if (!is.null(attr(x$data, "orig.colnames"))) {
+    labnames <- unlist(attr(x$data, "orig.colnames"))
+  }
+
+  p <- ggplot(melt.surface,
+              aes_string(x = "d1", y = "d2",
+                         z = "effect", fill = "effect")) +
     theme_bw() +
     geom_tile() +
-    labs(x = "Compound 1", y = "Compound 2") +
-    scale_fill_gradientn("Effect",
+    labs(x = labnames[2], y = labnames[3]) +
+    scale_fill_gradientn(labnames[1],
                          colours = c("steelblue", "lightsteelblue", "lightblue",
                                      "floralwhite", "beige", "khaki",
                                      "orange1", "tomato3", "red")) +
     geom_contour(bins = 7, col = "black", size = 0.2)
 
+  if (logScale) {
+    p <- p +
+      scale_x_log10(breaks = unique(x$data$d1)) +
+      scale_y_log10(breaks = unique(x$data$d1))
+  } else {
+    p <- p +
+      scale_x_continuous(breaks = unique(x$data$d1)) +
+      scale_y_continuous(breaks = unique(x$data$d1))
+  }
 
+  p
 
 }
 
