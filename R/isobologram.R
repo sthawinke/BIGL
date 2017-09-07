@@ -1,5 +1,8 @@
 #' Isobologram of the response surface predicted by the null model
 #'
+#' If transformation functions are used, then the isobologram response levels
+#' will be plotted on the transformed scale.
+#'
 #' @param x Output of \code{\link{fitSurface}}
 #' @param grid.len Number of concentrations to plot for each compound in the
 #'   contour plot. An evenly spaced grid of doses will be generated for each
