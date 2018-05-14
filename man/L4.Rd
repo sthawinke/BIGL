@@ -15,7 +15,7 @@ L4(dose, b, L, U, logEC50)
 
 \item{U}{Asymptote effect (at infinite dose)}
 
-\item{logEC50}{Point of inflection (in logarithmic terms)}
+\item{logEC50}{Point of inflection (in log10 terms)}
 }
 \description{
 4-parameter logistic dose-response function

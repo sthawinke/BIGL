@@ -56,7 +56,7 @@ This function returns a \code{MarginalFit} object with monotherapy
   estimates. \code{h1} and \code{h2} are Hill's slope coefficients for each
   of the compounds, \code{m1} and \code{m2} are their maximal response levels
   whereas \code{b} is the shared baseline. Lastly, \code{e1} and \code{e2}
-  are log-transformed EC50 values.
+  are log10-transformed EC50 values.
 
   \code{"sigma"} is standard deviation of residuals for the estimated
   monotherapy model and \code{"df"} is the degrees of freedom for the
