@@ -128,7 +128,7 @@ fitSurface <- function(data, fitResult,
                        method = c("equal", "model", "unequal"), confInt = TRUE,
                        bootRS = TRUE, trans = "identity", rescaleResids = FALSE,
                        invtrans = switch(trans, "identity" = "identity", "log" = "exp"),
-                       newtonRaphson = FALSE, asymptotes = 2) {
+                       newtonRaphson = FALSE, asymptotes = 2, bootmethod = method) {
 
   ## Argument matching
   null_model <- match.arg(null_model)
@@ -272,7 +272,7 @@ fitSurface <- function(data, fitResult,
                           "doseGrid" = doseGrid, "reps" = reps, "R" = R,
                           "idUnique" = idUnique, "B.B" = B.B,
                           "Total" = Total, "n1" = length(R), "method" = method,
-                          "respS" = offAxisPredAll, "bootRS" = bootRS,
+                          "respS" = offAxisPredAll, "bootRS" = bootRS, "bootmethod" = bootmethod,
                           "doseGridOff" = doseGridOff[names(R),], "transFun" = transFun,
                           "invTransFun" = invTransFun, "model" = model, "rescaleResids" = rescaleResids)
   statObj <- NULL

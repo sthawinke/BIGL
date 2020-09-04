@@ -57,7 +57,7 @@ generateData <- function(pars, sigma, data = NULL,
                          null_model = c("loewe", "hsa", "bliss", "loewe2"),
                          error = 1, sampling_errors = NULL, means = NULL,
                          model = NULL, method = "equal", wild_bootstrap = FALSE,
-                         rescaleResids, invTransFun, newtonRaphson = FALSE, ...) {
+                         rescaleResids, invTransFun, newtonRaphson = FALSE, bootmethod = method, ...) {
 
   ## Argument matching
   null_model <- match.arg(null_model)
@@ -116,7 +116,7 @@ generateData <- function(pars, sigma, data = NULL,
                      method = "equal", rescaleResids = FALSE)
         #Off-axis points
         errors[idd1d2] = sampleResids(means = ySim[idd1d2], sampling_errors = sampling_errors[idd1d2],
-                                     method = method, rescaleResids = rescaleResids,
+                                     method = bootmethod, rescaleResids = rescaleResids,
                                      model = model, invTransFun = invTransFun)
       }
     } else {
