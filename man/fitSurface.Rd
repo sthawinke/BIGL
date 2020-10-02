@@ -30,7 +30,8 @@ fitSurface(
   rescaleResids = FALSE,
   invtrans = switch(trans, identity = "identity", log = "exp"),
   newtonRaphson = FALSE,
-  asymptotes = 2
+  asymptotes = 2,
+  bootmethod = method
 )
 }
 \arguments{
@@ -139,6 +140,8 @@ response surfaces? May be faster but also less stable to switch on}
 
 \item{asymptotes}{Number of asymptotes. It can be either \code{1}
 as in standard Loewe model or \code{2} as in generalized Loewe model.}
+
+\item{bootmethod}{The resampling method to be used in the bootstraps. Defaults to the same as method}
 }
 \value{
 This function returns a \code{ResponseSurface} object with estimates

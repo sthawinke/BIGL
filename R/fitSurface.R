@@ -85,6 +85,7 @@
 #' response surfaces? May be faster but also less stable to switch on
 #' @param asymptotes Number of asymptotes. It can be either \code{1}
 #'   as in standard Loewe model or \code{2} as in generalized Loewe model.
+#' @param bootmethod The resampling method to be used in the bootstraps. Defaults to the same as method
 #' @inheritParams generateData
 #' @importFrom parallel makeCluster clusterSetRNGStream detectCores stopCluster parLapply
 #' @importFrom progress progress_bar

@@ -19,6 +19,7 @@ generateData(
   rescaleResids,
   invTransFun,
   newtonRaphson = FALSE,
+  bootmethod = method,
   ...
 )
 }
@@ -85,6 +86,8 @@ or else normality of the residuals is assumed.}
 
 \item{newtonRaphson}{A boolean, should Newton-Raphson be used to find Loewe
 response surfaces? May be faster but also less stable to switch on}
+
+\item{bootmethod}{The resampling method to be used in the bootstraps. Defaults to the same as method}
 
 \item{...}{Further arguments}
 }
