@@ -109,15 +109,20 @@ generateData <- function(pars, sigma, data = NULL,
         ## Use Rademacher distribution to account for heteroskedasticity
         errors = sampling_errors*(2*rbinom(length(ySim), size = 1, prob = 0.5)-1)
       } else {
-        idd1d2 = with(data, d1&d2)
-        errors = integer(length(ySim))
-        #On-axis points
-        errors[!idd1d2] = sampleResids(means = ySim[!idd1d2], sampling_errors = sampling_errors[!idd1d2],
-                     method = "equal", rescaleResids = FALSE)
-        #Off-axis points
-        errors[idd1d2] = sampleResids(means = ySim[idd1d2], sampling_errors = sampling_errors[idd1d2],
-                                     method = bootmethod, rescaleResids = rescaleResids,
-                                     model = model, invTransFun = invTransFun)
+        if(bootmethod == "equal"){
+          errors = sampleResids(means = ySim, sampling_errors = sampling_errors,
+                                method = "equal", rescaleResids = FALSE)
+        } else {
+          idd1d2 = with(data, d1&d2)
+          errors = integer(length(ySim))
+          #On-axis points
+          errors[!idd1d2] = sampleResids(means = ySim[!idd1d2], sampling_errors = sampling_errors[!idd1d2],
+                                         method = "equal", rescaleResids = FALSE)
+          #Off-axis points
+          errors[idd1d2] = sampleResids(means = ySim[idd1d2], sampling_errors = sampling_errors[idd1d2],
+                                        method = method, rescaleResids = rescaleResids,
+                                        model = model, invTransFun = invTransFun)
+        }
       }
     } else {
       stop("Unavailable error type.")
