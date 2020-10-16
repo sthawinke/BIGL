@@ -125,6 +125,8 @@ plotResponseSurface <- function(data, fitResult = NULL,
     if (!is.null(transforms)) {
       predSurface <- with(transforms,
                           InvPowerT(respSurface, compositeArgs))
+    } else {
+      predSurface <- respSurface
     }
     zGrid <- predSurface
   }
