@@ -120,7 +120,7 @@ generateData <- function(pars, sigma, data = NULL,
                                          method = "equal", rescaleResids = FALSE)
           #Off-axis points
           errors[idd1d2] = sampleResids(means = ySim[idd1d2], sampling_errors = sampling_errors[idd1d2],
-                                        method = method, rescaleResids = rescaleResids,
+                                        method = bootmethod, rescaleResids = rescaleResids,
                                         model = model, invTransFun = invTransFun)
         }
       }
